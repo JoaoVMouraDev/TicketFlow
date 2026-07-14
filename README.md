@@ -117,6 +117,9 @@ Substitua `JWT_SECRET` por uma chave forte com pelo menos 16 caracteres. O servi
 
 Arquivos `.env` e bancos locais são ignorados pelo Git e nunca devem ser publicados.
 
+> O SQLite é usado somente no desenvolvimento local. Em produção, `DATABASE_URL`
+> deve apontar para um PostgreSQL gerenciado, como o Supabase.
+
 ## Credenciais locais de demonstração
 
 O seed cria as contas abaixo com a senha `123456`:
@@ -207,7 +210,3 @@ As rotas abaixo exigem função `ADMIN`:
 - Validação de entrada com Zod.
 - Tratamento centralizado de erros do Prisma.
 - `.env`, SQLite, builds e dependências protegidos pelo `.gitignore`.
-- 
-```
-
-O banco `backend/prisma/dev.db` e o arquivo `backend/.env` são locais e não fazem parte do repositório.
