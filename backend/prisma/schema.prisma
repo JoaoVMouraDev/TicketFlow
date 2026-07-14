@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      String    @default("USER")
+  tickets   Ticket[]  @relation("CreatedTickets")
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Ticket {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  status      String       @default("OPEN")
+  priority    String       @default("MEDIUM")
+  category    String       @default("SOFTWARE")
+  createdById String
+  createdBy   User         @relation("CreatedTickets", fields: [createdById], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([status])
+  @@index([priority])
+  @@index([createdById])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  message   String
+  ticketId  String
+  userId    String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([userId])
+}
