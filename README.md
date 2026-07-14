@@ -207,13 +207,7 @@ As rotas abaixo exigem função `ADMIN`:
 - Validação de entrada com Zod.
 - Tratamento centralizado de erros do Prisma.
 - `.env`, SQLite, builds e dependências protegidos pelo `.gitignore`.
-
-## Verificação antes de publicar
-
-```bash
-npm run build
-cd backend
-npm run build
+- 
 ```
 
 O banco `backend/prisma/dev.db` e o arquivo `backend/.env` são locais e não fazem parte do repositório.
