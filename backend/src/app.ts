@@ -10,12 +10,17 @@ import { ticketsRouter } from './routes/tickets.js';
 
 export const app = express();
 
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(helmet());
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  'http://localhost:5177',
-  'http://127.0.0.1:5177',
+  ...(process.env.NODE_ENV !== 'production'
+    ? ['http://localhost:5177', 'http://127.0.0.1:5177']
+    : []),
 ].filter(Boolean);
 
 app.use(

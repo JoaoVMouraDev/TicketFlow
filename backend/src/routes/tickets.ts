@@ -61,6 +61,7 @@ ticketsRouter.get('/', async (req, res, next) => {
     const query = listTicketSchema.parse(req.query);
     const category = findCategoryBySearch(query.search);
     const where: Prisma.TicketWhereInput = {
+      ...(req.user!.role === 'USER' ? { createdById: req.user!.id } : {}),
       status: query.status,
       priority: query.priority,
       OR: query.search
@@ -131,6 +132,10 @@ ticketsRouter.get('/:id', async (req, res, next) => {
       return res.status(404).json({ message: 'Chamado nao encontrado' });
     }
 
+    if (req.user!.role === 'USER' && ticket.createdById !== req.user!.id) {
+      return res.status(403).json({ message: 'Voce nao tem permissao para acessar este chamado' });
+    }
+
     return res.json({ ticket });
   } catch (error) {
     return next(error);
@@ -175,6 +180,18 @@ ticketsRouter.patch('/:id', async (req, res, next) => {
 ticketsRouter.post('/:id/comments', async (req, res, next) => {
   try {
     const data = z.object({ message: z.string().trim().min(1) }).parse(req.body);
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: req.params.id },
+      select: { createdById: true },
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ message: 'Chamado nao encontrado' });
+    }
+
+    if (req.user!.role === 'USER' && ticket.createdById !== req.user!.id) {
+      return res.status(403).json({ message: 'Voce nao tem permissao para comentar neste chamado' });
+    }
 
     const comment = await prisma.comment.create({
       data: {
