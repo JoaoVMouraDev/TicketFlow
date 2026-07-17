@@ -29,6 +29,10 @@ const Category = {
 } as const;
 
 async function main() {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Seed de desenvolvimento não pode rodar em produção');
+  }
+
   const password = await bcrypt.hash('123456', 10);
 
   const admin = await prisma.user.upsert({

@@ -26,7 +26,13 @@ const loginLimiter = rateLimit({
   message: { message: 'Muitas tentativas de login. Tente novamente em alguns minutos.' },
 });
 
-authRouter.post('/register', async (req, res, next) => {
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 10,
+  message: { message: 'Muitas tentativas de cadastro. Tente novamente mais tarde.' },
+});
+
+authRouter.post('/register', registerLimiter, async (req, res, next) => {
   try {
     const data = registerSchema.parse(req.body);
     const password = await hashPassword(data.password);
